@@ -1,8 +1,15 @@
 # go-crud
 
+<p align="center">
+  <img src="gocrudlogo.png" alt="Go CRUD Logo" width="300" height="300">
+</p>
+
+
 Golang package for abstractions of basic GCP CRUD operations, API Handlers, JWT, as well as other useful functions.
 
 This is a copy of what was used by [Canary](https://github.com/maxcraig112/FIT3162-Canary), however is written so that it can be more easily used as a Golang package for other projects.
+
+---
 
 # Repository Structure
 
