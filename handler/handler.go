@@ -20,6 +20,23 @@ type Handler struct {
 	Mws     []func(http.Handler) http.Handler
 }
 
+func NewHandler(ctx context.Context) *Handler {
+	return &Handler{
+		Ctx: ctx,
+		Mws: make([]func(http.Handler) http.Handler, 0),
+	}
+}
+
+func (h *Handler) WithClients(clients *gcp.Clients) *Handler {
+	h.Clients = clients
+	return h
+}
+
+func (h *Handler) WithMiddleware(mws func(http.Handler) http.Handler) *Handler {
+	h.Mws = append(h.Mws, mws)
+	return h
+}
+
 // Register sets up the routes with the provided router, applying all middleware defined.
 func (h *Handler) Register(r *mux.Router, routes []Route, mws ...func(http.Handler) http.Handler) {
 	for _, route := range routes {
