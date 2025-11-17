@@ -10,14 +10,16 @@ import (
 
 type Handler struct {
 	Ctx     context.Context
+	Router  *mux.Router
 	Clients *gcp.Clients
 	Mws     []func(http.Handler) http.Handler
 }
 
-func NewHandler(ctx context.Context) *Handler {
+func NewHandler(ctx context.Context, r *mux.Router) *Handler {
 	return &Handler{
-		Ctx: ctx,
-		Mws: make([]func(http.Handler) http.Handler, 0),
+		Ctx:    ctx,
+		Router: r,
+		Mws:    make([]func(http.Handler) http.Handler, 0),
 	}
 }
 
@@ -32,27 +34,17 @@ func (h *Handler) WithMiddleware(mws func(http.Handler) http.Handler) *Handler {
 }
 
 // Register sets up the routes with the provided router, applying all middleware defined.
-func (h *Handler) Register(r *mux.Router, routes []Route, mws ...func(http.Handler) http.Handler) {
-	for _, route := range routes {
-		var wrapped http.Handler
-		// apply handler specific middleware
-		for _, mw := range h.Mws {
-			if wrapped == nil {
-				wrapped = mw(route.HandlerFunc)
-			} else {
-				wrapped = mw(wrapped)
-			}
+func (h *Handler) Register(method, pattern string, handlerFunc http.HandlerFunc) {
+	var wrapped http.Handler
+	// apply handler specific middleware
+	for _, mw := range h.Mws {
+		if wrapped == nil {
+			wrapped = mw(handlerFunc)
+		} else {
+			wrapped = mw(wrapped)
 		}
-
-		// apply route specific middleware
-		for _, mw := range mws {
-			if wrapped == nil {
-				wrapped = mw(route.HandlerFunc)
-			} else {
-				wrapped = mw(wrapped)
-			}
-		}
-
-		r.Handle(route.Pattern, wrapped).Methods(route.Method)
 	}
+
+	h.Router.Handle(pattern, wrapped).Methods(method)
+
 }
