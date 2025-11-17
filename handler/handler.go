@@ -8,12 +8,6 @@ import (
 	"github.com/maxcraig112/go-crud/gcp"
 )
 
-type Route struct {
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
-}
-
 type Handler struct {
 	Ctx     context.Context
 	Clients *gcp.Clients
