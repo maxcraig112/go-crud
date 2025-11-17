@@ -9,9 +9,9 @@ import (
 )
 
 type Route struct {
-	method      string
-	pattern     string
-	handlerFunc http.HandlerFunc
+	Method      string
+	Pattern     string
+	HandlerFunc http.HandlerFunc
 }
 
 type Handler struct {
@@ -27,7 +27,7 @@ func (h *Handler) Register(r *mux.Router, routes []Route, mws ...func(http.Handl
 		// apply handler specific middleware
 		for _, mw := range h.Mws {
 			if wrapped == nil {
-				wrapped = mw(route.handlerFunc)
+				wrapped = mw(route.HandlerFunc)
 			} else {
 				wrapped = mw(wrapped)
 			}
@@ -36,12 +36,12 @@ func (h *Handler) Register(r *mux.Router, routes []Route, mws ...func(http.Handl
 		// apply route specific middleware
 		for _, mw := range mws {
 			if wrapped == nil {
-				wrapped = mw(route.handlerFunc)
+				wrapped = mw(route.HandlerFunc)
 			} else {
 				wrapped = mw(wrapped)
 			}
 		}
 
-		r.Handle(route.pattern, wrapped).Methods(route.method)
+		r.Handle(route.Pattern, wrapped).Methods(route.Method)
 	}
 }
